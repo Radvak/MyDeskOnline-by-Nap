@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="app.title">MyDesk Online - By Nap</title>
+  <link rel="icon" type="image/png" href="MyDeskOnlineLogo.png">
+  <link rel="apple-touch-icon" href="MyDeskOnlineLogo.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#4e73df">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link id="theme-font-link" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Sora:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="app-header__title-row">
+      <div class="language-switcher">
+        <label for="language-select" data-i18n="language.label">Langue</label>
+        <select id="language-select" data-i18n-aria-label="language.selectAria">
+          <option value="fr" data-i18n="language.french">Français</option>
+          <option value="en" data-i18n="language.english">Anglais</option>
+          <option value="vi" data-i18n="language.vietnamese">Vietnamien</option>
+        </select>
+      </div>
+      <a href="https://github.com/NapGames-Dev/MyDeskOnline/tree/main"><button id="version-indicator" class="version-indicator" type="button" aria-live="polite" data-i18n="version.checking">Vérification...</button></a>
+      <h1 data-i18n="app.title">MyDesk Online - By Nap</h1>
+    </div>
+    <nav class="tab-bar">
+      <button class="tab-link active" data-target="home" data-i18n="tabs.home">Accueil</button>
+      <button class="tab-link" data-target="calendar" data-i18n="tabs.calendar">Agenda</button>
+      <button class="tab-link" data-target="mindmap" data-i18n="tabs.mindmap">Cartes mentales</button>
+      <button class="tab-link" data-target="todo" data-i18n="tabs.todo">To Do List</button>
+      <button class="tab-link" data-target="notes" data-i18n="tabs.notes">Notes</button>
+      <button class="tab-link" data-target="daily" data-i18n="tabs.daily">Défis Quotidiens</button>
+      <button class="tab-link" data-target="gantt" data-i18n="tabs.gantt">GANTT</button>
+      <button class="tab-link" data-target="snake" data-i18n="tabs.snake">Snake</button>
+      <button class="tab-link" data-target="trackirigo" data-i18n="tabs.track">Track'Irigo</button>
+      <button class="tab-link tab-link--icon" data-target="settings" data-i18n-aria-label="tabs.settingsAria">
+        <img src="settings_icon.png" alt="" aria-hidden="true" />
+      </button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="home" class="tab-panel active">
+      <h2 data-i18n="home.heading">Configuration et sauvegarde</h2>
+      <p data-i18n="home.description">
+        Sélectionnez un dossier local pour enregistrer vos données ou indiquez un chemin manuel.
+        Les données sont également conservées dans votre navigateur pour un accès rapide.
+      </p>
+      <div class="storage-controls">
+        <label for="storage-path" data-i18n="home.storagePathLabel">Chemin de sauvegarde</label>
+        <input type="text" id="storage-path" placeholder="/chemin/vers/mon/dossier" data-i18n-placeholder="home.storagePathPlaceholder">
+        <div class="storage-buttons">
+          <button id="choose-folder" data-i18n="home.chooseFolder">Choisir un dossier</button>
+          <button id="export-json" data-i18n="home.exportJson">Exporter les données (JSON)</button>
+          <button id="import-json" data-i18n="home.importJson">Importer un fichier JSON</button>
+        </div>
+        <input type="file" id="import-input" accept="application/json" hidden>
+        <p class="storage-status" id="storage-status"></p>
+      </div>
+
+      <div class="sync-panel" id="sync-panel">
+        <h2 data-i18n="sync.heading">Synchronisation entre appareils</h2>
+        <p data-i18n="sync.description">
+          Synchronisez vos données entre votre téléphone et vos ordinateurs grâce à un Gist privé sur votre compte GitHub (gratuit).
+        </p>
+        <div class="storage-controls" id="sync-disconnected">
+          <ol class="sync-steps">
+            <li data-i18n="sync.step1">Créez un token GitHub avec uniquement la permission « gist ».</li>
+            <li data-i18n="sync.step2">Collez-le ci-dessous puis cliquez sur « Connecter ».</li>
+            <li data-i18n="sync.step3">Répétez sur chaque appareil avec le même token.</li>
+          </ol>
+          <a class="sync-token-link" href="https://github.com/settings/tokens/new?scopes=gist&amp;description=MyDesk%20Online%20Sync" target="_blank" rel="noopener noreferrer" data-i18n="sync.createToken">Créer un token GitHub ↗</a>
+          <label for="sync-token" data-i18n="sync.tokenLabel">Token GitHub</label>
+          <input type="password" id="sync-token" autocomplete="off" spellcheck="false" placeholder="ghp_…" data-i18n-placeholder="sync.tokenPlaceholder">
+          <div class="storage-buttons">
+            <button id="sync-connect" data-i18n="sync.connect">Connecter</button>
+          </div>
+        </div>
+        <div class="storage-controls" id="sync-connected" hidden>
+          <p id="sync-info"></p>
+          <div class="storage-buttons">
+            <button id="sync-now" data-i18n="sync.syncNow">Synchroniser maintenant</button>
+            <button id="sync-disconnect" class="btn-secondary" data-i18n="sync.disconnect">Déconnecter</button>
+          </div>
+        </div>
+        <p class="storage-status" id="sync-status"></p>
+      </div>
+    </section>
+
+    <section id="settings" class="tab-panel">
+      <div class="settings-page">
+
+        <!-- ── Apparence ─────────────────────────────────────────── -->
+        <div class="settings-section">
+          <h2 class="settings-section__title" data-i18n="settings.appearance.title">🎨 Apparence</h2>
+
+          <!-- Thèmes prédéfinis -->
+          <div class="settings-block">
+            <h3 class="settings-block__label" data-i18n="settings.appearance.themes">Thèmes</h3>
+            <div class="theme-presets" id="theme-presets"></div>
+          </div>
+
+          <!-- Mode sombre / clair -->
+          <div class="settings-block">
+            <h3 class="settings-block__label" data-i18n="settings.appearance.colorMode">Mode</h3>
+            <div class="color-mode-toggle" id="color-mode-toggle">
+              <button class="color-mode-btn" data-mode="light" data-i18n="settings.appearance.light">☀️ Clair</button>
+              <button class="color-mode-btn" data-mode="dark" data-i18n="settings.appearance.dark">🌙 Sombre</button>
+              <button class="color-mode-btn" data-mode="auto" data-i18n="settings.appearance.auto">🖥️ Système</button>
+            </div>
+          </div>
+
+          <!-- Couleurs personnalisées -->
+          <div class="settings-block">
+            <h3 class="settings-block__label" data-i18n="settings.appearance.colors">Couleurs personnalisées</h3>
+            <div class="color-pickers-grid">
+              <div class="color-picker-row">
+                <label data-i18n="settings.appearance.primaryColor">Couleur principale</label>
+                <div class="color-picker-with-reset">
+                  <input type="color" id="color-primary" class="color-pick" data-var="--primary">
+                  <button class="reset-color-btn" data-var="--primary" title="Réinitialiser">↩</button>
+                </div>
+              </div>
+              <div class="color-picker-row">
+                <label data-i18n="settings.appearance.accentColor">Couleur accent</label>
+                <div class="color-picker-with-reset">
+                  <input type="color" id="color-accent" class="color-pick" data-var="--accent">
+                  <button class="reset-color-btn" data-var="--accent" title="Réinitialiser">↩</button>
+                </div>
+              </div>
+              <div class="color-picker-row">
+                <label data-i18n="settings.appearance.bgColor">Arrière-plan</label>
+                <div class="color-picker-with-reset">
+                  <input type="color" id="color-background" class="color-pick" data-var="--background">
+                  <button class="reset-color-btn" data-var="--background" title="Réinitialiser">↩</button>
+                </div>
+              </div>
+              <div class="color-picker-row">
+                <label data-i18n="settings.appearance.surfaceColor">Surface (cartes)</label>
+                <div class="color-picker-with-reset">
+                  <input type="color" id="color-surface" class="color-pick" data-var="--surface">
+                  <button class="reset-color-btn" data-var="--surface" title="Réinitialiser">↩</button>
+                </div>
+              </div>
+              <div class="color-picker-row">
+                <label data-i18n="settings.appearance.textColor">Texte</label>
+                <div class="color-picker-with-reset">
+                  <input type="color" id="color-text" class="color-pick" data-var="--text">
+                  <button class="reset-color-btn" data-var="--text" title="Réinitialiser">↩</button>
+                </div>
+              </div>
+              <div class="color-picker-row">
+                <label data-i18n="settings.appearance.headerColor">En-tête</label>
+                <div class="color-picker-with-reset">
+                  <input type="color" id="color-header" class="color-pick" data-var="--header-bg">
+                  <button class="reset-color-btn" data-var="--header-bg" title="Réinitialiser">↩</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Typographie -->
+          <div class="settings-block">
+            <h3 class="settings-block__label" data-i18n="settings.appearance.font">Police de caractères</h3>
+            <div class="font-selector" id="font-selector">
+              <button class="font-btn" data-font="Inter" style="font-family:'Inter'">Inter</button>
+              <button class="font-btn" data-font="Outfit" style="font-family:'Outfit'">Outfit</button>
+              <button class="font-btn" data-font="DM Sans" style="font-family:'DM Sans'">DM Sans</button>
+              <button class="font-btn" data-font="Sora" style="font-family:'Sora'">Sora</button>
+              <button class="font-btn" data-font="Nunito" style="font-family:'Nunito'">Nunito</button>
+              <button class="font-btn" data-font="IBM Plex Sans" style="font-family:'IBM Plex Sans'">IBM Plex Sans</button>
+              <button class="font-btn" data-font="system-ui" style="font-family:system-ui">Système</button>
+            </div>
+          </div>
+
+          <!-- Taille de police -->
+          <div class="settings-block">
+            <h3 class="settings-block__label" data-i18n="settings.appearance.fontSize">Taille du texte</h3>
+            <div class="font-size-control">
+              <span class="font-size-label small-label">A</span>
+              <input type="range" id="font-size-slider" min="13" max="19" step="1" value="16">
+              <span class="font-size-label large-label">A</span>
+              <span class="font-size-value" id="font-size-value">16px</span>
+            </div>
+          </div>
+
+          <!-- Rayon des bordures -->
+          <div class="settings-block">
+            <h3 class="settings-block__label" data-i18n="settings.appearance.borderRadius">Coins arrondis</h3>
+            <div class="font-size-control">
+              <span style="font-size:1.1rem">▢</span>
+              <input type="range" id="radius-slider" min="0" max="20" step="2" value="8">
+              <span style="font-size:1.1rem">⬜</span>
+              <span class="font-size-value" id="radius-value">8px</span>
+            </div>
+          </div>
+
+          <!-- Densité de l'interface -->
+          <div class="settings-block">
+            <h3 class="settings-block__label" data-i18n="settings.appearance.density">Densité de l'interface</h3>
+            <div class="color-mode-toggle">
+              <button class="color-mode-btn" data-density="compact" data-i18n="settings.appearance.compact">Compact</button>
+              <button class="color-mode-btn" data-density="normal" data-i18n="settings.appearance.normal">Normal</button>
+              <button class="color-mode-btn" data-density="spacious" data-i18n="settings.appearance.spacious">Aéré</button>
+            </div>
+          </div>
+
+          <!-- Reset -->
+          <div class="settings-block">
+            <button id="reset-appearance" class="btn-secondary" data-i18n="settings.appearance.reset">↺ Réinitialiser l'apparence</button>
+          </div>
+        </div>
+
+        <!-- ── Onglets visibles ────────────────────────────────────── -->
+        <div class="settings-section">
+          <h2 class="settings-section__title" data-i18n="settings.tabs.title">📑 Onglets visibles</h2>
+          <p class="settings-section__desc" data-i18n="settings.description">Choisissez les onglets que vous souhaitez afficher.</p>
+          <div class="settings-grid" id="tab-visibility-settings"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="calendar" class="tab-panel">
+      <div class="calendar-header">
+        <div class="week-navigation">
+          <button id="prev-week" aria-label="Semaine précédente" data-i18n-aria-label="calendar.prevWeekLabel">◀</button>
+          <div class="week-label" id="week-label"></div>
+          <button id="next-week" aria-label="Semaine suivante" data-i18n-aria-label="calendar.nextWeekLabel">▶</button>
+        </div>
+        <div class="calendar-actions">
+          <button id="today-button" data-i18n="calendar.today">Aujourd'hui</button>
+          <span class="hint" data-i18n="calendar.hint">Astuce : utilisez les flèches du clavier pour naviguer de semaine.</span>
+        </div>
+      </div>
+      <div class="calendar-content">
+        <div class="calendar-grid" id="calendar-grid"></div>
+        <aside class="event-types-panel">
+          <h3 data-i18n="calendar.eventTypesTitle">Types d'évènements</h3>
+          <div class="event-type-list" id="event-type-list"></div>
+          <form class="event-type-form" id="event-type-form">
+            <label>
+              <span data-i18n="calendar.eventTypeNameLabel">Nom du type</span>
+              <input type="text" id="event-type-name" placeholder="Nom du type" required data-i18n-placeholder="calendar.eventTypeNamePlaceholder">
+            </label>
+            <label>
+              <span data-i18n="calendar.eventTypeColorLabel">Couleur</span>
+              <input type="color" id="event-type-color" value="#3b82f6">
+            </label>
+            <button type="submit" data-i18n="calendar.eventTypeAdd">Ajouter un type</button>
+          </form>
+        </aside>
+      </div>
+    </section>
+
+    <section id="mindmap" class="tab-panel">
+      <div class="mindmap-toolbar">
+        <button id="add-node" data-i18n="mindmap.addNode">Ajouter une bulle</button>
+        <button id="delete-node" data-i18n="mindmap.deleteNode">Supprimer</button>
+        <button id="link-nodes" data-i18n="mindmap.linkNodes">Relier</button>
+        <label class="color-picker">
+          <span data-i18n="mindmap.colorLabel">Couleur</span>
+          <input type="color" id="node-color" value="#4e73df">
+        </label>
+      </div>
+      <div class="mindmap-layout">
+        <div class="mindmap-canvas-wrapper">
+          <svg class="mindmap-links" id="mindmap-links"></svg>
+          <div class="mindmap-canvas" id="mindmap-canvas"></div>
+        </div>
+        <aside class="mindmap-sidebar">
+          <h3 data-i18n="mindmap.title">Cartes mentales</h3>
+          <ul class="mindmap-list" id="mindmap-list"></ul>
+          <div class="mindmap-actions">
+            <button id="add-map" data-i18n="mindmap.addMap">Nouvelle carte</button>
+            <button id="rename-map" data-i18n="mindmap.renameMap">Renommer</button>
+            <button id="delete-map" data-i18n="mindmap.deleteMap">Supprimer la carte</button>
+          </div>
+        </aside>
+      </div>
+      <p class="hint" data-i18n="mindmap.hint">Astuce : faites glisser les bulles pour les déplacer, double-cliquez pour renommer.</p>
+    </section>
+
+    <section id="todo" class="tab-panel">
+      <div class="todo-header">
+        <button id="add-block" data-i18n="todo.addBlock">Ajouter un bloc</button>
+      </div>
+      <div class="todo-blocks" id="todo-blocks"></div>
+    </section>
+
+    <section id="notes" class="tab-panel">
+      <div class="notes-layout">
+        <aside class="notes-sidebar">
+          <div class="notes-sidebar__header">
+            <h3 data-i18n="notes.title">Notes</h3>
+            <button id="notes-add-page" data-i18n="notes.addPage">Nouvelle page</button>
+          </div>
+          <div class="notes-page-list" id="notes-page-list"></div>
+          <div class="notes-sidebar__actions">
+            <button id="notes-rename-page" data-i18n="notes.renamePage">Renommer</button>
+            <button id="notes-delete-page" data-i18n="notes.deletePage">Supprimer</button>
+          </div>
+        </aside>
+        <div class="notes-editor">
+          <div class="notes-toolbar" aria-label="Barre d'outils de mise en forme">
+            <button type="button" class="notes-tool" data-command="bold" data-i18n="notes.toolbar.bold" title="Gras">Gras</button>
+            <button type="button" class="notes-tool" data-command="italic" data-i18n="notes.toolbar.italic" title="Italique">Italique</button>
+            <button type="button" class="notes-tool" data-command="underline" data-i18n="notes.toolbar.underline" title="Souligner">Souligner</button>
+            <button type="button" class="notes-tool" data-command="strikeThrough" data-i18n="notes.toolbar.strike" title="Barré">Barré</button>
+            <button type="button" class="notes-tool" data-command="insertUnorderedList" data-i18n="notes.toolbar.bullet" title="Puces">Puces</button>
+            <button type="button" class="notes-tool" data-command="insertOrderedList" data-i18n="notes.toolbar.numbered" title="Liste numérotée">Liste numérotée</button>
+            <label class="notes-tool notes-tool--picker">
+              <span data-i18n="notes.toolbar.fontSize">Taille</span>
+              <select id="notes-font-size">
+                <option value="2">12px</option>
+                <option value="3" selected>16px</option>
+                <option value="4">18px</option>
+                <option value="5">24px</option>
+                <option value="6">32px</option>
+                <option value="7">48px</option>
+              </select>
+            </label>
+            <label class="notes-tool notes-tool--picker">
+              <span data-i18n="notes.toolbar.textColor">Couleur</span>
+              <input type="color" id="notes-text-color" value="#111827" aria-label="Couleur du texte" />
+            </label>
+            <label class="notes-tool notes-tool--picker">
+              <span data-i18n="notes.toolbar.highlight">Surligner</span>
+              <input type="color" id="notes-highlight" value="#fef08a" aria-label="Couleur de surlignage" />
+            </label>
+          </div>
+          <div
+            class="notes-editor__content"
+            id="notes-editor"
+            contenteditable="true"
+            data-i18n-placeholder="notes.placeholder"
+            data-placeholder="Commencez à écrire..."
+          ></div>
+          <p class="hint" data-i18n="notes.hint">Ajoutez plusieurs pages et mettez vos notes en forme.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="daily" class="tab-panel">
+      <div class="daily-layout">
+        <div class="daily-header">
+          <div>
+            <h2 data-i18n="daily.title">Défis quotidiens</h2>
+            <p class="hint" data-i18n="daily.description">
+              Ajoutez des défis à accomplir chaque jour et consultez l'historique.
+            </p>
+          </div>
+          <div class="daily-form">
+            <label class="form-group">
+              <span data-i18n="daily.nameLabel">Nom du défi</span>
+              <input type="text" id="daily-name" data-i18n-placeholder="daily.namePlaceholder" placeholder="Faire du sport" />
+            </label>
+            <label class="form-group">
+              <span data-i18n="daily.weeklyTargetLabel">Objectif hebdomadaire</span>
+              <input type="number" id="daily-weekly-target" min="1" step="1" value="1" />
+            </label>
+            <label class="daily-toggle">
+              <input type="checkbox" id="daily-include-weekend" checked />
+              <span data-i18n="daily.includeWeekend">Inclure le week-end</span>
+            </label>
+            <button id="daily-add" data-i18n="daily.addChallenge">Ajouter un défi</button>
+          </div>
+        </div>
+
+        <div class="daily-panels">
+          <div class="daily-card">
+            <div class="daily-card__header">
+              <h3 data-i18n="daily.todayTitle">Défis du jour</h3>
+              <span class="hint" data-i18n="daily.completionLegend"></span>
+            </div>
+            <div id="daily-today-list" class="daily-today-list"></div>
+          </div>
+
+          <div class="daily-card">
+            <div class="daily-card__header">
+              <h3 data-i18n="daily.historyTitle">Historique des derniers jours</h3>
+            </div>
+            <div id="daily-history" class="daily-history"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="gantt" class="tab-panel">
+      <div class="gantt-layout">
+        <aside class="gantt-sidebar">
+          <h3 data-i18n="gantt.sidebarTitle">Schémas GANTT</h3>
+          <ul class="gantt-chart-list" id="gantt-chart-list"></ul>
+          <div class="gantt-actions">
+            <button id="gantt-add-chart" data-i18n="gantt.addChart">Nouveau schéma</button>
+            <button id="gantt-rename-chart" data-i18n="gantt.renameChart">Renommer</button>
+            <button id="gantt-delete-chart" data-i18n="gantt.deleteChart">Supprimer</button>
+          </div>
+        </aside>
+        <div class="gantt-main">
+          <div class="gantt-header">
+            <div>
+              <h3 id="gantt-active-name" data-i18n="gantt.headerTitle">Créez un schéma GANTT pour commencer</h3>
+              <p class="hint" data-i18n="gantt.headerHint">Ajoutez des tâches avec leurs dates de début et de fin pour visualiser votre planning.</p>
+            </div>
+            <button id="gantt-add-task" disabled data-i18n="gantt.addTask">Ajouter une tâche</button>
+          </div>
+          <div class="gantt-content" id="gantt-content">
+            <div class="gantt-empty" id="gantt-empty" data-i18n="gantt.emptySelection">Aucun schéma sélectionné.</div>
+            <div class="gantt-board" id="gantt-board" hidden>
+              <div class="gantt-task-list">
+                <div class="gantt-task-row gantt-task-header">
+                  <span data-i18n="gantt.table.task">Tâche</span>
+                  <span data-i18n="gantt.table.start">Début</span>
+                  <span data-i18n="gantt.table.end">Fin</span>
+                  <span data-i18n="gantt.table.progress">Progression</span>
+                  <span></span>
+                </div>
+                <div id="gantt-task-rows"></div>
+              </div>
+              <div class="gantt-timeline" id="gantt-timeline"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="snake" class="tab-panel">
+      <div class="snake-layout">
+        <div class="snake-header">
+          <div>
+            <h2 data-i18n="snake.title">Snake</h2>
+            <p class="hint" data-i18n="snake.subtitle">Attrapez les pommes et évitez les collisions.</p>
+          </div>
+          <div class="snake-controls">
+            <button id="snake-start" data-i18n="snake.start">Démarrer</button>
+            <button id="snake-pause" data-i18n="snake.pause">Pause</button>
+            <button id="snake-reset" data-i18n="snake.reset">Réinitialiser</button>
+          </div>
+        </div>
+        <div class="snake-panel">
+          <div class="snake-board">
+            <canvas id="snake-canvas" width="420" height="420" role="img" aria-label="Snake"></canvas>
+          </div>
+          <div class="snake-sidebar">
+            <div class="snake-scoreboard">
+              <div class="snake-score">
+                <span data-i18n="snake.score">Score</span>
+                <strong id="snake-score">0</strong>
+              </div>
+              <div class="snake-score">
+                <span data-i18n="snake.best">Meilleur score</span>
+                <strong id="snake-best">0</strong>
+              </div>
+            </div>
+            <div id="snake-status" class="snake-status" data-i18n="snake.status.ready">Prêt à jouer</div>
+            <p class="hint" data-i18n="snake.controls">Utilisez les flèches ou ZQSD pour diriger le serpent.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="trackirigo" class="tab-panel">
+      <div class="embedded-site">
+        <iframe
+          src="https://trackirigo.yabrich.fr/map"
+          title="Track'Irigo – Carte Irigo"
+          data-i18n-title="track.iframeTitle"
+          loading="lazy"
+          allow="geolocation"
+        ></iframe>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="event-modal" hidden>
+    <div class="modal-content">
+      <h3 data-i18n="calendar.eventModal.createTitle">Nouvel évènement</h3>
+      <form id="event-form">
+        <label>
+          <span data-i18n="calendar.eventModal.titleLabel">Titre</span>
+          <input type="text" id="event-title" required>
+        </label>
+        <label>
+          <span data-i18n="calendar.eventModal.datetimeLabel">Date et heure</span>
+          <input type="datetime-local" id="event-datetime" required>
+        </label>
+        <label>
+          <span data-i18n="calendar.eventModal.durationLabel">Durée (minutes)</span>
+          <input type="number" id="event-duration" min="15" step="15" value="60">
+        </label>
+        <label>
+          <span data-i18n="calendar.eventModal.typeLabel">Type d'évènement</span>
+          <select id="event-type">
+            <option value="" data-i18n="calendar.eventModal.typeNone">Aucun</option>
+          </select>
+        </label>
+        <label>
+          <span data-i18n="calendar.eventModal.colorLabel">Couleur</span>
+          <input type="color" id="event-color" value="#10b981">
+        </label>
+        <label>
+          <span data-i18n="calendar.eventModal.recurrenceLabel">Répétition</span>
+          <select id="event-recurrence">
+            <option value="none" data-i18n="calendar.eventModal.recurrence.none">Aucune</option>
+            <option value="daily" data-i18n="calendar.eventModal.recurrence.daily">Quotidienne</option>
+            <option value="weekly" data-i18n="calendar.eventModal.recurrence.weekly">Hebdomadaire</option>
+            <option value="monthly" data-i18n="calendar.eventModal.recurrence.monthly">Mensuelle</option>
+            <option value="yearly" data-i18n="calendar.eventModal.recurrence.yearly">Annuelle</option>
+          </select>
+        </label>
+        <div class="modal-actions">
+          <button type="submit" data-i18n="calendar.eventModal.save">Enregistrer</button>
+          <button type="button" id="cancel-event" data-i18n="calendar.eventModal.cancel">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <object id="local-version-source" type="application/json" data="version.json" aria-hidden="true" hidden></object>
+  <script src="sync.js" defer></script>
+  <script src="script.js" defer></script>
+  <script>
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch((error) => console.warn('Service worker indisponible', error));
+      });
+    }
+  </script>
+</body>
+</html>
